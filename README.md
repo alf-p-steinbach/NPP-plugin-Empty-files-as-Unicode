@@ -1,4 +1,4 @@
-# NPP-plugin-Empty-files-as-Unicode
+# Notepad++ plugin: Empty files as Unicode
 Change encoding of empty documents to Unicode
 
 Let 𝘜 be UTF-8 with BOM. When a buffer is activated and has not already been checked:
