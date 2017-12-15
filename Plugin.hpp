@@ -56,8 +56,17 @@ namespace plugin_impl {
     using std::unique_ptr;
     using std::wstring;
 
+    inline auto has_console()
+        -> bool&
+    {
+        static bool value;
+        return value;
+    }
+
     inline void dbginfo( ref_<const wstring> s )
     {
+        if( not has_console() ) { return; }
+
         using namespace std;
         const auto indent = wstring( 4, L' ' );
         wstring formatted = indent;
@@ -258,11 +267,19 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
 
         Plugin( const HWND npp_handle ): npp_{ npp_handle } 
         {
+            has_console() = true;
             if( GetStdHandle( STD_ERROR_HANDLE ) == 0 )
             {
-                AttachConsole( ATTACH_PARENT_PROCESS );
+#if NDEBUG
+                has_console() = false;
+#else
+                if( not AttachConsole( ATTACH_PARENT_PROCESS ) )
+                {
+                    AllocConsole();
+                }
                 freopen( "con", "w", stderr );
                 fprintf( stderr, "\n" );  fflush( stderr );
+#endif
             }
         }
     };
