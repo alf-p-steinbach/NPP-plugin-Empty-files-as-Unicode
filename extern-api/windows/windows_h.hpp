@@ -1,0 +1,10 @@
+#pragma once
+#undef UNICODE
+#define UNICODE
+#undef NOMINMAX
+#define NOMINMAX
+#undef STRICT
+#define STRICT
+#undef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
