@@ -1,6 +1,6 @@
-﻿#include <notepad++/plugin-dll-interface.hpp>
+﻿#include "Plugin.hpp"
 
-#include <source/Plugin.hpp>
+#include <notepad++/plugin-dll-interface.hpp>
 #include <stdlib/extension/type_builders.hpp>
 using namespace stdlib::type_builders;
 

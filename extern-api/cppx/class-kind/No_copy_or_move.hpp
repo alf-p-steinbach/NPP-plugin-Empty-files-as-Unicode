@@ -1,6 +1,6 @@
 #pragma once
-#include <cppx/class_kind/No_move.hpp>
-#include <cppx/class_kind/No_copy.hpp>
+#include <cppx/class-kind/No_move.hpp>
+#include <cppx/class-kind/No_copy.hpp>
 
 namespace cppx{
 

@@ -1,54 +1,37 @@
 ﻿#pragma once
 
-#include <cppx/class_kind/No_copy_or_move.hpp>
+#include "Npp.hpp"
+
+#include <cppx/class-kind/No_copy_or_move.hpp>
+#include <cppx/debug/console-output.hpp>        // cppx::debug::*
+#include <cppx/debug/CPPX_DBGINFO.hpp>
+#include <cppx/stdlib-wrappers/Map_.hpp>        // cppx::Map_
+#include <cppx/text/stdstring_util.hpp>         // cppx::wide_from_ascii
+
 #include <notepad++/plugin-dll-interface.hpp>   // Func_item etc.
-#include <source/ALF_DBGINFO.hpp>
-#include <source/Npp.hpp>
-//#include <stdlib/iostream.hpp>                  // std::wclog //! Ungood with reset of handles.
 #include <stdlib/extension/hopefully_and_fail.hpp>
 #include <stdlib/extension/type_builders.hpp>
 #include <stdlib/extension/Size.hpp>            // stdlib::(n_items_of, array_size, Size, U_size)
 
-#include <functional>       // std::invoke
-#include <iostream>         // std::wclog
-#include <memory>           // std::(make_unique, unique_ptr)
-#include <string>           // std::wstring
-#include <unordered_map>    // std::unordered_map
-#include <unordered_set>    // std::unordered_set
-
-namespace cppx{
-    using std::unordered_map;
-    using std::unordered_set;
-    using namespace stdlib::type_builders;
-
-    inline namespace set_operations {
-
-        template< class Key, class Value >      using Map = unordered_map<Key, Value>;
-        template< class Value >                 using Set = unordered_set<Value>;
-
-        template< class Key, class Value, class Arg >
-        auto in( ref_<const Map<Key, Value>> map, ref_<const Arg> v )
-            -> bool
-        { return map.count( v ) > 0; }
-
-        template< class Value, class Arg >
-        auto in( ref_<const Set<Value>> set, ref_<const Arg> v )
-            -> bool
-        { return set.count( v ) > 0; }
-
-    } // namespace set_operations
-}  // namespace cppx
+#include <stdlib/functional.hpp>                // std::invoke
+#include <iostream>                             // std::wclog
+#include <stdlib/memory.hpp>                    // std::(make_unique, unique_ptr)
+#include <stdlib/string.hpp>                    // std::wstring
 
 namespace plugin_impl {
+    using cppx::Map_;
     using cppx::No_copy_or_move;
-    using cppx::in;
-    using namespace cppx::set_operations;
+    using cppx::wide_from_ascii;
+    namespace debug = cppx::debug;
 
-    using stdlib::array_size;
-    using stdlib::fail;
-    using stdlib::n_items_of;
-    using stdlib::U_size;
-    using namespace stdlib::type_builders;  // raw_array_of_, ref_
+    auto& dbginfo = cppx::debug::info;          // For CPPX_DBGINFO.
+
+    namespace stdlibx = stdlib;
+    using stdlibx::array_size;
+    using stdlibx::fail;
+    using stdlibx::n_items_of;
+    using stdlibx::U_size;
+    using namespace stdlibx::type_builders;     // raw_array_, ref_
 
     using std::exception;
     using std::invoke;
@@ -56,34 +39,7 @@ namespace plugin_impl {
     using std::unique_ptr;
     using std::wstring;
 
-    inline auto has_console()
-        -> bool&
-    {
-        static bool value;
-        return value;
-    }
-
-    inline void dbginfo( ref_<const wstring> s )
-    {
-        if( not has_console() ) { return; }
-
-        using namespace std;
-        const auto indent = wstring( 4, L' ' );
-        wstring formatted = indent;
-        for( const wchar_t ch : s )
-        {
-            formatted += ch;
-            if( ch == L'\n' ) { formatted += indent; }
-        }
-        formatted[0] = L'*';        // L'•';
-        wclog << formatted << endl;
-    }
-
-    inline auto wide_from_ascii( char const s[] )
-        -> wstring
-    { return wstring( s, s + strlen( s ) ); }
-
-    auto const about_text = //unflowed( flowed_about_text );
+    auto const about_text =
 //L"Let 𝘜 be the encoding last saved as default, or, if that encoding isn’t Unicode,\
 // let 𝘜 be UTF-8 with BOM.\n\ 
 L"Let 𝘜 be UTF-8 with BOM.\n\
@@ -108,7 +64,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
         using Buffer_id = npp::Buffer_id;
         struct Codepage_id{ enum Enum: int {}; };
 
-        using Buffer_codepage_map = Map<Buffer_id::Enum, Codepage_id::Enum>;
+        using Buffer_codepage_map = Map_<Buffer_id::Enum, Codepage_id::Enum>;
 
         Npp                     npp_;
         bool                    npp_startup_completed_  = false;
@@ -142,7 +98,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
             const Enc npp_file_encoding = npp_.file_encoding( buffer_id );
 
             const auto filepath = npp_.doc_path_for( buffer_id );
-            ALF_DBGINFO(
+            CPPX_DBGINFO(
                 to_wstring( buffer_id ) + L" [" + filepath + L"]\n"
                 + L"Outer file encoding = " + name_of( npp_file_encoding )
                 );
@@ -171,7 +127,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 }
             } );
 
-            //ALF_DBGINFO( wstring() + L"is_unicode = " + (is_unicode? L"T" : L"F") );
+            //CPPX_DBGINFO( wstring() + L"is_unicode = " + (is_unicode? L"T" : L"F") );
             if( not is_unicode )
             {
                 if( buffer_id != npp_.current_buffer_id() )
@@ -179,7 +135,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                     // Can practically only change encoding of current buffer.
                     fail( "Plugin::check - not current, can't change encoding" );
                 }
-                ALF_DBGINFO( filepath + L"\nCONVERTING to UTF-8 with BOM" );
+                CPPX_DBGINFO( filepath + L"\nCONVERTING to UTF-8 with BOM" );
                 npp_.convert_to_utf8_with_bom();
             }
 
@@ -213,7 +169,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
             catch( ref_<const exception> x )
             {
                 (void) x;       // Unused in release build.
-                ALF_DBGINFO( L"! " + wide_from_ascii( x.what() ) );
+                CPPX_DBGINFO( L"! " + wide_from_ascii( x.what() ) );
             }
         }
 
@@ -231,8 +187,8 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
 	        {
 	            case NPPN_BUFFERACTIVATED:
                 {
-                    // During startup dummy documents are created and activated, but
-                    // changing encoding of such can create a second window pane.
+                    // During startup dummy documents are created and activated, and
+                    // changing the encoding of such can create a second window pane.
                     if( npp_startup_completed_ )
                     {
                         auto_check( npp_.current_buffer_id() );
@@ -259,29 +215,15 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 }
                 case NPPN_SHUTDOWN:
                 {
-                    ALF_DBGINFO( L"Closing Notepad++..." );
+                    CPPX_DBGINFO( L"Closing Notepad++..." );
                     break;
                 }
 	        }
         }
 
-        Plugin( const HWND npp_handle ): npp_{ npp_handle } 
-        {
-            has_console() = true;
-            if( GetStdHandle( STD_ERROR_HANDLE ) == 0 )
-            {
-#if NDEBUG
-                has_console() = false;
-#else
-                if( not AttachConsole( ATTACH_PARENT_PROCESS ) )
-                {
-                    AllocConsole();
-                }
-                freopen( "con", "w", stderr );
-                fprintf( stderr, "\n" );  fflush( stderr );
-#endif
-            }
-        }
+        Plugin( const HWND npp_handle )
+            : npp_{ npp_handle } 
+        { debug::init_console(); }
     };
 
 }  // namespace plugin_impl

@@ -1,5 +1,5 @@
 #pragma once
-#include <stdlib.h>         // EXIT_...
+#include <stdlib/c/stdlib.hpp>      // EXIT_...
 
 namespace cppx{ namespace process{
 
