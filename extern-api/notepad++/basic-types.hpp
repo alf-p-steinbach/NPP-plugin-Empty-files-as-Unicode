@@ -25,12 +25,6 @@ namespace npp {
         static constexpr Enum n_values = _;
     };
 
-    inline auto is_unicode( const File_encoding::Enum encoding )
-        -> bool
-    {
-        return false;
-    }
-
     struct View_id
     {
         // MAIN_VIEW, SUB_VIEW

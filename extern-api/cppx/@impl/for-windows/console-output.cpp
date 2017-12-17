@@ -13,7 +13,9 @@ namespace cppx{ namespace debug{
         {
             using impl::has_console;
             has_console() = (GetStdHandle( STD_ERROR_HANDLE ) != 0);
-#ifndef NDEBUG
+#ifdef NDEBUG
+            (void) ensure_new_line;
+#else
             if( not has_console() )
             {
                 has_console() =
