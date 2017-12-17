@@ -110,12 +110,16 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                     if( buffer_id != npp_.current_buffer_id() )
                     {
                         // Can practically only check the current buffer.
-                        fail( "Plugin::check - not current, can't get scintilla codepage" );
+                        fail( "Plugin::check - not current, can't check encoding cookie" );
                     }
 
-                    const int cp = npp_.scintilla_codepage();
-                    CPPX_DBGINFO( L"Scintilla codepage = " + to_wstring( cp ) );
-                    return (cp == SC_CP_UTF8);
+                    //! Scintilla codepage seems to always be UTF-8, even for ANSI encoding.
+                    //! With ANSI endoding sometimes no encoding shown in Notepad++ menus.
+                    //
+                    //const int cp = npp_.scintilla_codepage();
+                    //CPPX_DBGINFO( L"Scintilla codepage = " + to_wstring( cp ) );
+                    //return (cp == SC_CP_UTF8);
+                    return false;   // Necessary to convert ANSI with Scintilla UTF-8.
                 }
                 else
                 {
@@ -215,6 +219,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 }
 	            case NPPN_FILEOPENED:
                 {
+                    CPPX_DBGINFO( L"NPPN_FILEOPENED" );
 		            break;
                 }
                 case NPPN_FILEBEFORECLOSE:
@@ -224,7 +229,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 }
                 case NPPN_READY:
                 {
-                    //auto_check_all();
+                    auto_check_all();
                     npp_startup_completed_ = true;
 		            break;
                 }
