@@ -1,8 +1,11 @@
 #pragma once
+#include "plugin-name.hpp"
+#include "scintilla.hpp"
+
 #include <notepad++/command-ids.hpp>
+#include <notepad++/plugin-dll-interface.hpp>           // NppData
 #include <notepad++/window-messages.hpp>
 #include <notepad++/basic-types.hpp>
-#include <source/plugin-name.hpp>
 #include <stdlib/extension/hopefully_and_fail.hpp>      // stdlib::(fail, hopefully)
 #include <stdlib/extension/type_builders.hpp>           // stdlib::(raw_array_of_, ref_)
 
@@ -20,15 +23,37 @@ namespace npp_impl {
 
     class Npp
     {
-        HWND    handle_;
+        NppData     handles_;
 
     public:
         using Buffer_id         = npp::Buffer_id;
-        using File_encoding          = npp::File_encoding;
+        using File_encoding     = npp::File_encoding;
         using View_id           = npp::View_id;
         using X_view_id         = npp::Extended_view_id;
 
-        auto handle() const -> HWND { return handle_; }
+        auto handle() const
+            -> HWND
+        { return handles_._nppHandle; }
+
+        auto scintilla_handle_for( const View_id::Enum view_id ) const
+            -> HWND
+        {
+            switch( view_id )
+            {
+                case View_id::main:     
+                {
+                    return handles_._scintillaMainHandle;
+                }
+                case View_id::secondary:
+                {
+                    return handles_._scintillaSecondHandle;
+                }
+                default:
+                {
+                    return 0;
+                }
+            }
+        }
 
         auto n_open_files_in( const X_view_id::Enum view_id ) const
             -> int
@@ -65,6 +90,13 @@ namespace npp_impl {
         {
             const LRESULT result = ::SendMessage( handle(), NPPM_GETCURRENTBUFFERID, 0, 0 );
             return static_cast<Buffer_id::Enum>( result );
+        }
+
+        auto current_view_id() const
+            -> View_id::Enum
+        {
+            const LRESULT result = SendMessage( handle(), NPPM_GETCURRENTVIEW, 0, 0 );
+            return static_cast<View_id::Enum>( result );
         }
 
         auto file_encoding( const Buffer_id::Enum id ) const
@@ -123,7 +155,19 @@ namespace npp_impl {
             ) const
         { ::MessageBox( handle(), text.c_str(), title.c_str(), MB_ICONINFORMATION ); }
 
-        Npp( const HWND handle ): handle_{ handle } {}
+        auto scintilla_handle() const
+            -> HWND
+        { return scintilla_handle_for( current_view_id() ); }
+
+        auto scintilla_codepage() const
+            -> int
+        { return scintilla::codepage( scintilla_handle() ); }
+
+        auto scintilla_length() const
+            -> int
+        { return scintilla::length( scintilla_handle() ); }
+
+        Npp( ref_<const NppData> handles ): handles_{ handles } {}
     };
 }  // namespace npp_impl
 

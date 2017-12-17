@@ -1,5 +1,5 @@
 #pragma once
-#include <windows/windows_h.hpp>     // Before <PluginInterace.h> includes it.
+#include <windows/windows_h.hpp>     // Before <PluginInterface.h> includes it.
 #include <notepad++/original/PluginInterface.h>
 
 namespace npp {

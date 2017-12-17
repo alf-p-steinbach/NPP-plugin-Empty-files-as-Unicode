@@ -110,11 +110,12 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                     if( buffer_id != npp_.current_buffer_id() )
                     {
                         // Can practically only check the current buffer.
-                        fail( "Plugin::check - not current, can't get scintilla  codepage" );
+                        fail( "Plugin::check - not current, can't get scintilla codepage" );
                     }
 
-                    // TODO: Check Scintilla codepage
-                    return false;
+                    const int cp = npp_.scintilla_codepage();
+                    CPPX_DBGINFO( L"Scintilla codepage = " + to_wstring( cp ) );
+                    return (cp == SC_CP_UTF8);
                 }
                 else
                 {
@@ -135,8 +136,12 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                     // Can practically only change encoding of current buffer.
                     fail( "Plugin::check - not current, can't change encoding" );
                 }
-                CPPX_DBGINFO( filepath + L"\nCONVERTING to UTF-8 with BOM" );
-                npp_.convert_to_utf8_with_bom();
+
+                if( npp_.scintilla_length() == 0 )
+                {
+                    CPPX_DBGINFO( filepath + L"\nCONVERTING to UTF-8 with BOM" );
+                    npp_.convert_to_utf8_with_bom();
+                }
             }
 
             checked_buffers_.emplace( buffer_id, Codepage_id::Enum{} ); // TODO:
@@ -160,6 +165,11 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 );
         }
 
+        void cmd_check_all()
+        {
+            auto_check_all();
+        }
+
         void check( const Buffer_id::Enum buffer_id )
         {
             try
@@ -178,6 +188,14 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
             if( not in( checked_buffers_, buffer_id ) )
             {
                 check( buffer_id );
+            }
+        }
+
+        void auto_check_all()
+        {
+            for( const auto buffer_id : npp_.buffer_ids() )
+            {
+                auto_check( buffer_id );
             }
         }
 
@@ -206,10 +224,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 }
                 case NPPN_READY:
                 {
-                    for( const auto buffer_id : npp_.buffer_ids() )
-                    {
-                        auto_check( buffer_id );
-                    }
+                    //auto_check_all();
                     npp_startup_completed_ = true;
 		            break;
                 }
@@ -221,8 +236,8 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
 	        }
         }
 
-        Plugin( const HWND npp_handle )
-            : npp_{ npp_handle } 
+        Plugin( ref_<const NppData> npp_handles )
+            : npp_{ npp_handles } 
         { debug::init_console(); }
     };
 

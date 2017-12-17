@@ -22,6 +22,7 @@ namespace {
         { L"Enabled", []{}, 0, true, nullptr },
         { L"Disabled", []{}, 0, false, nullptr },
         {},
+        { L"Check all", []{ plugin_singleton->cmd_check_all(); }, 0, false, nullptr },
         { L"Show doc info…", []{ plugin_singleton->cmd_show_doc_info(); }, 0, false, nullptr }
     };
 }  // namespace <anon>
@@ -31,7 +32,7 @@ extern "C" {
     EXPORT void setInfo( const npp::Handles handles )
     {
         if( plugin_singleton != nullptr ) { return; }     // TODO: log the problem
-        plugin_singleton = std::make_unique<Plugin>( handles._nppHandle );
+        plugin_singleton = std::make_unique<Plugin>( handles );
     }
 
     EXPORT auto getName() -> ptr_<const wchar_t> { return Plugin::name; }
