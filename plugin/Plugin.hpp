@@ -206,8 +206,8 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
         void on_notification( const npp::Notification_id id, const Buffer_id::Enum buffer_id = {} )
         {
             switch( id )
-	        {
-	            case NPPN_BUFFERACTIVATED:
+            {
+                case NPPN_BUFFERACTIVATED:
                 {
                     // During startup dummy documents are created and activated, and
                     // changing the encoding of such can create a second window pane.
@@ -215,12 +215,12 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                     {
                         auto_check( npp_.current_buffer_id() );
                     }
-		            break;
+                    break;
                 }
-	            case NPPN_FILEOPENED:
+                case NPPN_FILEOPENED:
                 {
                     CPPX_DBGINFO( L"NPPN_FILEOPENED" );
-		            break;
+                    break;
                 }
                 case NPPN_FILEBEFORECLOSE:
                 {
@@ -231,14 +231,14 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 {
                     auto_check_all();
                     npp_startup_completed_ = true;
-		            break;
+                    break;
                 }
                 case NPPN_SHUTDOWN:
                 {
                     CPPX_DBGINFO( L"Closing Notepad++..." );
                     break;
                 }
-	        }
+            }
         }
 
         Plugin( ref_<const NppData> npp_handles )
