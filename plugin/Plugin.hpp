@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "menu.hpp"
 #include "Npp.hpp"
 
 #include <cppx/class-kind/No_copy_or_move.hpp>
@@ -18,13 +19,13 @@
 #include <stdlib/memory.hpp>                    // std::(make_unique, unique_ptr)
 #include <stdlib/string.hpp>                    // std::wstring
 
-namespace plugin_impl {
+namespace plugin{ namespace impl {
     using cppx::Map_;
     using cppx::No_copy_or_move;
     using cppx::wide_from_ascii;
     namespace debug = cppx::debug;
 
-    auto& dbginfo = cppx::debug::info;          // For CPPX_DBGINFO.
+    constexpr auto& dbginfo = cppx::debug::info;   // For CPPX_DBGINFO.
 
     namespace stdlibx = stdlib;
     using stdlibx::array_size;
@@ -68,6 +69,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
 
         Npp                     npp_;
         bool                    npp_startup_completed_  = false;
+        bool                    is_disabled_            = false;
         Buffer_codepage_map     checked_buffers_        = {};
 
         static auto name_of( const npp::File_encoding::Enum e )
@@ -151,6 +153,27 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
             checked_buffers_.emplace( buffer_id, Codepage_id::Enum{} ); // TODO:
         }
 
+        void update_menus()
+        {
+            using Static_id = menu::Static_cmd_id;
+            const auto set_item_check = [&]( const Static_id::Enum i, const bool value )
+            {
+                npp_.set_menu_item_check( menu::dynamic_cmd_id( i ), value );
+            };
+
+            set_item_check( Static_id::set_enabled, not is_disabled_ );
+            set_item_check( Static_id::set_disabled, is_disabled_ );
+        }
+
+        void set_disabled( const bool new_value )
+        {
+            if( is_disabled_ != new_value )
+            {
+                is_disabled_ = new_value;
+                update_menus();
+            }
+        }
+
     public:
         static constexpr auto name = plugin::name;
 
@@ -172,6 +195,16 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
         void cmd_check_all()
         {
             auto_check_all();
+        }
+
+        void cmd_set_enabled()
+        {
+            set_disabled( false );
+        }
+
+        void cmd_set_disabled()
+        {
+            set_disabled( true );
         }
 
         void check( const Buffer_id::Enum buffer_id )
@@ -205,6 +238,11 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
 
         void on_notification( const npp::Notification_id id, const Buffer_id::Enum buffer_id = {} )
         {
+            if( is_disabled_ )
+            {
+                return;
+            }
+
             switch( id )
             {
                 case NPPN_BUFFERACTIVATED:
@@ -230,6 +268,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 case NPPN_READY:
                 {
                     auto_check_all();
+                    update_menus();
                     npp_startup_completed_ = true;
                     break;
                 }
@@ -243,9 +282,11 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
 
         Plugin( ref_<const NppData> npp_handles )
             : npp_{ npp_handles } 
-        { debug::init_console(); }
+        {
+            debug::init_console();
+        }
     };
 
-}  // namespace plugin_impl
+}}  // namespace plugin::impl
 
-using plugin_impl::Plugin;
+using plugin::impl::Plugin;

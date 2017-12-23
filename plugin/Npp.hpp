@@ -35,6 +35,23 @@ namespace npp_impl {
             -> HWND
         { return handles_._nppHandle; }
 
+        auto allocate_command_ids( const int n )
+            -> int          // First in consecutive range
+        {
+            int first = 0;
+            const LRESULT result = SendMessage(
+                handle(), NPPM_ALLOCATECMDID, n, reinterpret_cast<LPARAM>( &first )
+                );
+            hopefully( result != 0 )
+                or fail( "Npp::allocate_command_ids - failed" );
+            return first;
+        }
+
+        void set_menu_item_check( const int id, const bool state )
+        {
+            SendMessage( handle(), NPPM_SETMENUITEMCHECK, id, state );
+        }
+
         auto scintilla_handle_for( const View_id::Enum view_id ) const
             -> HWND
         {

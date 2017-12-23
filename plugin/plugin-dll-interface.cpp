@@ -1,55 +1,59 @@
-﻿#include "Plugin.hpp"
+﻿#include <notepad++/plugin-dll-interface.hpp>
 
-#include <notepad++/plugin-dll-interface.hpp>
+#include "menu.hpp"
+#include "Plugin.hpp"
+#include "plugin-singleton.hpp"
+
 #include <stdlib/extension/type_builders.hpp>
 using namespace stdlib::type_builders;
 
+#include <assert.h>
 #include <memory>
 using std::unique_ptr;
+using namespace stdlib::type_builders;
+
+void dbginfo( ref_<const std::wstring> s )
+{
+    MessageBox( 0, s.c_str(), L"DbgInfo:", MB_ICONINFORMATION | MB_SETFOREGROUND );
+}
 
 namespace npp {
     using Handles       = ::NppData;
-    using Menu_item     = ::FuncItem;
 }  // namespace npp
-
-namespace {
-    unique_ptr<Plugin> plugin_singleton;
-
-    raw_array_<npp::Menu_item> menu_items =
-    {
-        { L"About…", []{ plugin_singleton->cmd_about(); }, 0, false, nullptr },
-#ifndef NDEBUG
-        {},
-        { L"Enabled", []{}, 0, true, nullptr },
-        { L"Disabled", []{}, 0, false, nullptr },
-        {},
-        { L"Check all", []{ plugin_singleton->cmd_check_all(); }, 0, false, nullptr },
-        { L"Show doc info…", []{ plugin_singleton->cmd_show_doc_info(); }, 0, false, nullptr },
-#endif
-    };
-}  // namespace <anon>
 
 #define EXPORT __declspec( dllexport )
 extern "C" {
     EXPORT void setInfo( const npp::Handles handles )
     {
-        if( plugin_singleton != nullptr ) { return; }     // TODO: log the problem
-        plugin_singleton = std::make_unique<Plugin>( handles );
+        CPPX_DBGINFO( L"setInfo()" );
+        auto& ps = plugin::impl::singleton_pointer;
+        if( ps() != nullptr ) { return; }       // TODO: log the problem
+        ps() = std::make_unique<Plugin>( handles );
     }
 
-    EXPORT auto getName() -> ptr_<const wchar_t> { return Plugin::name; }
+    EXPORT auto getName()
+        -> ptr_<const wchar_t>
+    {
+        return Plugin::name;
+    }
 
     EXPORT auto getFuncsArray( const ptr_<int> n_funcs )
         -> ptr_<FuncItem>
     {
-	    *n_funcs = static_cast<int>( std::size( menu_items ) );
-	    return &menu_items[0];
+        CPPX_DBGINFO( L"getFuncsArray()" );
+        const menu::Items items = menu::items();
+        *n_funcs = items.count;
+        return &items.item[0];
     }
 
     EXPORT void beNotified( const ptr_<SCNotification> p_notification )
     {
-        if( plugin_singleton == nullptr ) { return; }   // TODO: log the problem
-        plugin_singleton->on_notification(
+        if( plugin::impl::singleton_pointer() == nullptr )
+        {
+            return;         // TODO: log the problem
+        }
+
+        plugin::singleton().on_notification(
             p_notification->nmhdr.code,
             static_cast<npp::Buffer_id::Enum>( p_notification->nmhdr.idFrom )   // Undocumented.
             );
