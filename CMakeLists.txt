@@ -6,11 +6,11 @@ if( NOT ${CMAKE_SIZEOF_VOID_P} EQUAL 4 )
 endif()
 
 include_directories(
-	extern-api
-	)
+    extern-api
+    )
 
 add_library( empty-files-as-unicode MODULE
-	plugin/menu.cpp
-	plugin/plugin-dll-interface.cpp
-	plugin/cppx-impl/console-output.cpp
-	)
+    plugin/menu.cpp
+    plugin/plugin-dll-interface.cpp
+    plugin/cppx-impl/console-output.cpp
+    )
