@@ -21,6 +21,14 @@ namespace {
     };
 }  // namespace <anon>
 
+namespace impl {
+
+    template< class Result, class Type >
+    constexpr inline auto array_size_( Type const& a )
+        -> Result
+    { return static_cast<Result>( array_size( a ) ); }
+}
+
 auto menu::items()
     -> menu::Items
-{ return {menu_items, array_size( menu_items )}; }
+{ return {menu_items, impl::array_size_<int>( menu_items )}; }
