@@ -2,9 +2,9 @@
 project( "Notepad++ encoding fix plugin" )
 
 if( ${CMAKE_SIZEOF_VOID_P} EQUAL 4 )
-	set( PLUGIN_NAME_SUFFIX "32-bit" )
+    set( PLUGIN_NAME_SUFFIX "32-bit" )
 elseif( ${CMAKE_SIZEOF_VOID_P} EQUAL 8 )
-	set( PLUGIN_NAME_SUFFIX "64-bit" )
+    set( PLUGIN_NAME_SUFFIX "64-bit" )
 else()
     message( FATAL_ERROR "The selected toolchain isn't recognized as 32-bit or 64-bit." )
 endif()
