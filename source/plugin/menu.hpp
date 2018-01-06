@@ -1,10 +1,10 @@
 #pragma once
-#include <notepad++/plugin-dll-interface.hpp>       // ::FuncItem
-#include <stdlib/extension/type_builders.hpp>       // ptr_
+#include <wrapped-notepad++/plugin-dll-interface.hpp>   // ::FuncItem
+#include <stdlib/extension/type_builders.hpp>           // ptr_
 
 namespace menu{
     using Item     = ::FuncItem;
-    using namespace stdlib::type_builders;
+    using namespace stdlib::ext::type_builders;
 
     struct Static_cmd_id
     {

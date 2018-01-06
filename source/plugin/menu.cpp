@@ -3,8 +3,8 @@
 #include "plugin-singleton.hpp"
 #include <stdlib/extension/Size.hpp>            // array_size
 
-using namespace stdlib::type_builders;          // raw_array_
-using stdlib::array_size;
+using namespace stdlib::ext::type_builders;     // raw_array_
+using stdlib::ext::array_size;
 
 namespace {
     raw_array_<menu::Item> menu_items =

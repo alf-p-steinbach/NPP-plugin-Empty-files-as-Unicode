@@ -1,4 +1,5 @@
 ﻿cmake_minimum_required( VERSION 3.10 )
+
 project( "Notepad++ encoding fix plugin" )
 
 if( ${CMAKE_SIZEOF_VOID_P} EQUAL 4 )
@@ -16,5 +17,5 @@ include_directories(
 add_library( empty-files-as-unicode.${PLUGIN_NAME_SUFFIX} MODULE
     source/plugin/menu.cpp
     source/plugin/plugin-dll-interface.cpp
-    source/plugin/cppx-impl/console-output.cpp
+    source/extern-api/cppx/@impl/for-windows/console-output.cpp
     )

@@ -1,16 +1,15 @@
-﻿#include <notepad++/plugin-dll-interface.hpp>
+﻿#include <wrapped-notepad++/plugin-dll-interface.hpp>
 
 #include "menu.hpp"
 #include "Plugin.hpp"
 #include "plugin-singleton.hpp"
 
 #include <stdlib/extension/type_builders.hpp>
-using namespace stdlib::type_builders;
+using namespace stdlib::ext::type_builders;
 
 #include <assert.h>
 #include <memory>
 using std::unique_ptr;
-using namespace stdlib::type_builders;
 
 void dbginfo( ref_<const std::wstring> s )
 {

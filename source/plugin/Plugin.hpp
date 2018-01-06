@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "menu.hpp"
-#include "Npp.hpp"
+#include "plugin-name.hpp"
 
 #include <cppx/class-kind/No_copy_or_move.hpp>
 #include <cppx/debug/console-output.hpp>        // cppx::debug::*
@@ -9,15 +9,19 @@
 #include <cppx/stdlib-wrappers/Map_.hpp>        // cppx::Map_
 #include <cppx/text/stdstring_util.hpp>         // cppx::wide_from_ascii
 
-#include <notepad++/plugin-dll-interface.hpp>   // Func_item etc.
+#include <npp/Npp.hpp>
+
 #include <stdlib/extension/hopefully_and_fail.hpp>
 #include <stdlib/extension/type_builders.hpp>
-#include <stdlib/extension/Size.hpp>            // stdlib::(n_items_of, array_size, Size, U_size)
+#include <stdlib/extension/Size.hpp>            // stdlib::ext::(n_items_of, array_size, Size, U_size)
 
+#include <stdlib/bitset.hpp>
 #include <stdlib/functional.hpp>                // std::invoke
 #include <iostream>                             // std::wclog
 #include <stdlib/memory.hpp>                    // std::(make_unique, unique_ptr)
 #include <stdlib/string.hpp>                    // std::wstring
+
+#include <wrapped-notepad++/plugin-dll-interface.hpp>   // Func_item etc.
 
 namespace plugin{ namespace impl {
     using cppx::Map_;
@@ -25,15 +29,15 @@ namespace plugin{ namespace impl {
     using cppx::wide_from_ascii;
     namespace debug = cppx::debug;
 
-    constexpr auto& dbginfo = cppx::debug::info;   // For CPPX_DBGINFO.
+    constexpr auto& dbginfo = cppx::debug::info;    // For CPPX_DBGINFO.
 
-    namespace stdlibx = stdlib;
-    using stdlibx::array_size;
-    using stdlibx::fail;
-    using stdlibx::n_items_of;
-    using stdlibx::U_size;
-    using namespace stdlibx::type_builders;     // raw_array_, ref_
+    using stdlib::ext::array_size;
+    using stdlib::ext::fail;
+    using stdlib::ext::n_items_of;
+    using stdlib::ext::U_size;
+    using namespace stdlib::ext::type_builders;     // raw_array_, ref_
 
+    using std::bitset;
     using std::exception;
     using std::invoke;
     using std::to_wstring;
@@ -107,31 +111,14 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
 
             const bool is_unicode = invoke( [&]() -> bool
             {
-                if( npp_file_encoding == Enc::uni_cookie )
-                {
-                    if( buffer_id != npp_.current_buffer_id() )
-                    {
-                        // Can practically only check the current buffer.
-                        fail( "Plugin::check - not current, can't check encoding cookie" );
-                    }
-
-                    //! Scintilla codepage seems to always be UTF-8, even for ANSI encoding.
-                    //! With ANSI endoding sometimes no encoding shown in Notepad++ menus.
-                    //
-                    //const int cp = npp_.scintilla_codepage();
-                    //CPPX_DBGINFO( L"Scintilla codepage = " + to_wstring( cp ) );
-                    //return (cp == SC_CP_UTF8);
-                    return false;   // Necessary to convert ANSI with Scintilla UTF-8.
-                }
-                else
-                {
-                    // uni_7Bit is presumably pure ASCII.
-                    // uni_8Bit is e.g. Windows ANSI.
-                    return not(
-                        npp_file_encoding == Enc::uni_7Bit or
-                        npp_file_encoding == Enc::uni_8bit
-                        );
-                }
+                static const bitset<8> unicodes = 0u
+                    | (1u << Enc::utf8_with_bom)
+                    | (1u << Enc::utf16_be_with_bom)
+                    | (1u << Enc::utf16_le_with_bom)
+                    | (1u << Enc::utf8)
+                    | (1u << Enc::utf16_be)
+                    | (1u << Enc::utf16_le);
+                return unicodes[npp_file_encoding];
             } );
 
             //CPPX_DBGINFO( wstring() + L"is_unicode = " + (is_unicode? L"T" : L"F") );
@@ -145,7 +132,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
 
                 if( npp_.scintilla_length() == 0 )
                 {
-                    CPPX_DBGINFO( filepath + L"\nCONVERTING to UTF-8 with BOM" );
+                    CPPX_DBGINFO( filepath + L"\nCONVERTING to Unicode" );
                     npp_.convert_to_utf8_with_bom();
                 }
             }
@@ -183,10 +170,15 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
             npp_.infobox( about_text, title );
         }
 
+        void infobox( ref_<const wstring> text )
+        {
+            npp_.infobox( text, plugin::name );
+        }
+
         void cmd_show_doc_info()
         {
             const npp::File_encoding::Enum encoding = npp_.file_encoding();
-            npp_.infobox(
+            infobox(
                 L"File: [" + npp_.current_doc_path() + L"]\n" +
                 L"File_encoding: " + name_of( encoding )
                 );

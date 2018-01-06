@@ -6,7 +6,7 @@
 
 namespace plugin {
     using std::unique_ptr;
-    using namespace stdlib::type_builders;      // ref_
+    using namespace stdlib::ext::type_builders;      // ref_
 
     // The singleton is created by DLL func setInfo() in "plugin-dll-interface.cpp".
     // It's (also) accessed by the menu data initialization in "menu.cpp".
