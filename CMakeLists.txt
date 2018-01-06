@@ -11,11 +11,13 @@ else()
 endif()
 
 include_directories(
-    source/extern-api
+    source/reusable
+	source/third-party-libraries
     )
 
 add_library( empty-files-as-unicode.${PLUGIN_NAME_SUFFIX} MODULE
     source/plugin/menu.cpp
     source/plugin/plugin-dll-interface.cpp
-    source/extern-api/cppx/@impl/for-windows/console-output.cpp
+    source/plugin/@libraries/console-output.include.cpp
+	source/plugin/@libraries/tinyxml2.include.cpp
     )
