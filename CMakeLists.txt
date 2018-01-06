@@ -12,12 +12,12 @@ endif()
 
 include_directories(
     source/reusable
-	source/third-party-libraries
+    source/third-party-libraries
     )
 
 add_library( empty-files-as-unicode.${PLUGIN_NAME_SUFFIX} MODULE
     source/plugin/menu.cpp
     source/plugin/plugin-dll-interface.cpp
     source/plugin/@libraries/console-output.include.cpp
-	source/plugin/@libraries/tinyxml2.include.cpp
+    source/plugin/@libraries/tinyxml2.include.cpp
     )
