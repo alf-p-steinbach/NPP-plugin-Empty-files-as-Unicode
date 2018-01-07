@@ -10,30 +10,26 @@ namespace npp{
 
     using Path = fs::path;
 
-    inline auto path_to_installation()
-        -> Path
+    struct Paths
     {
-        return winutil::path_to_executable().parent_path();
-    }
+        virtual auto installation_folder() const
+            -> Path
+        { return winutil::path_to_executable().parent_path(); }
 
-    inline auto path_to_config_folder(
-        ref_<const Path> installation_path      = path_to_installation()
-        )
-        -> Path
-    {
-        return (
-            fs::exists( installation_path / L"doLocalConf.xml" )
-                ? installation_path
-                : winutil::path_to_appdata() / appname
-            );
-    }
+        virtual auto config_folder() const
+            -> Path
+        {
+            const Path installation_folder_path = installation_folder();
+            return (
+                fs::exists( installation_folder_path / L"doLocalConf.xml" )
+                    ? installation_folder_path
+                    : winutil::path_to_appdata() / appname
+                );
+        }
 
-    inline auto path_to_gui_config(
-        ref_<const Path> config_folder_path     = path_to_config_folder()
-        )
-        -> Path
-    {
-        return config_folder_path / L"config.xml";
-    }
+        virtual auto gui_config_file() const
+            -> Path
+        { return config_folder() / L"config.xml"; }
+    };
 
 }  // namespace hpp
