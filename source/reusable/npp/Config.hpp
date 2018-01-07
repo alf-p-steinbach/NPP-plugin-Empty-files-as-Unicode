@@ -116,12 +116,13 @@ namespace npp {
             return printer.CStr();
         }
 
-        Config( ref_<const Path> path = path_to_gui_config() )
+        Config( ref_<const Paths> paths = {} )
             : p_xml_{ new tx2::XMLDocument{} }
         {
-            hopefully( fs::exists( path ) )
+            const Path config_path = paths.gui_config_file();
+            hopefully( fs::exists( config_path ) )
                 or fail( "npp::Config::<init> - specified config file doesn't exist" );
-            const string ansi_config_path = char_path_or_x( path );
+            const string ansi_config_path = char_path_or_x( config_path );
             p_xml_->LoadFile( ansi_config_path.c_str() ) >> Success{}
                 or fail( "npp::Config::<init> - tinyxml2::XMLDocument::LoadFile failed" );
             //hopefully( xml_.RootElement()->Name() == "NotepadPlus"s )
