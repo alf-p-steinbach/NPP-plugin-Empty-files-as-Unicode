@@ -49,9 +49,13 @@ namespace plugin{ namespace impl {
 //L"Let 𝘜 be UTF-8 with BOM.\n
 L"The current default Unicode encoding 𝘜 is ¤.\n\
 \n\
-Generally 𝘜 is the encoding last saved as default in the general Notepad++\
- options, or, if that encoding isn’t Unicode, then 𝘜 is UTF-8 with BOM.\
- Note: Notepad++ only saves the options when you exit the program. Thus, to\
+Without this plugin Notepad++ will assume that any existing empty file is encoded\
+ as Windows ANSI. With this plugin a Unicode encoding is assumed, and used when you\
+ add and save some text.\n\
+\n\
+Technically, here’s how it works. Let 𝘜 be the encoding last saved as default in the\
+ general Notepad++ options, or, if that encoding isn’t Unicode, then 𝘜 is UTF-8 with\
+ BOM.  Note: Notepad++ only saves the options when you exit the program. Thus, to\
  see any changed default as 𝘜 you’ll have to relaunch the program.\n\
 \n\
 When a buffer is activated and has not already been checked:\n\
@@ -60,13 +64,6 @@ When a buffer is activated and has not already been checked:\n\
       its encoding isn’t Unicode, then\n\
 \n\
       its encoding is set to 𝘜.\n\
-\n\
-Ideally the “when a buffer…” should have been “when file a is opened or\
- a new document is created”, but\
- apparently Notepad++ does not inform a plugin of its creation of new\
- documents. Also, ideally the forced encoding 𝘜 should have been the one\
- currently selected as default in Notepad++, but apparently Notepad++ does not\
- make the dynamic configuration info available to a plugin.\n\
 \n\
 Author’s mail address: alf.p.steinbach+npp@gmail.com";
 
