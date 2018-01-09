@@ -46,7 +46,6 @@ namespace plugin{ namespace impl {
     using std::wstring;
 
     auto const about_text =
-//L"Let 𝘜 be UTF-8 with BOM.\n
 L"The current default Unicode encoding 𝘜 is ¤.\n\
 \n\
 Without this plugin Notepad++ will assume that any existing empty file is encoded\
