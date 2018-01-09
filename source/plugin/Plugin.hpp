@@ -50,12 +50,12 @@ namespace plugin{ namespace impl {
 L"The current default Unicode encoding 𝘜 is ¤.\n\
 \n\
 Without this plugin Notepad++ will assume that any existing empty file is encoded\
- as Windows ANSI. With this plugin a Unicode encoding is assumed, and used when you\
- add and save some text.\n\
+ as Windows ANSI. With this plugin a Unicode encoding 𝘜 is assumed when an empty\
+ file is opened. 𝘜 is then used for new text and when you save the file.\n\
 \n\
-Technically, here’s how it works. Let 𝘜 be the encoding last saved as default in the\
+Technically, here’s how it works. 𝘜 is the encoding last saved as default in the\
  general Notepad++ options, or, if that encoding isn’t Unicode, then 𝘜 is UTF-8 with\
- BOM.  Note: Notepad++ only saves the options when you exit the program. Thus, to\
+ BOM.  Note: Notepad++ only saves the options when you exit the program, so to\
  see any changed default as 𝘜 you’ll have to relaunch the program.\n\
 \n\
 When a buffer is activated and has not already been checked:\n\
