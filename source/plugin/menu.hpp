@@ -17,7 +17,7 @@ namespace menu{
         int         count;
     };
 
-    auto items() -> Items;
+    extern auto items() -> Items;
 
     inline auto dynamic_cmd_id( const Static_cmd_id::Enum i )
         -> int

@@ -1,6 +1,8 @@
 #pragma once
+#include <stdlib/extension/type_builders.hpp>
 
 namespace npp {
+    using namespace stdlib::ext::type_builders;     // ptr_, raw_array_
 
     struct Buffer_id
     {
@@ -22,8 +24,30 @@ namespace npp {
             utf16_le            = 7,           // Uni16LE_noBOM      
             _
         };
-        static constexpr Enum n_values = _;
+        static auto n_values() -> int { return _; }
     };
+
+    inline auto name_of( const npp::File_encoding::Enum e )
+        -> ptr_<const wchar_t>
+    {
+        static const raw_array_<ptr_<const wchar_t>> names =
+        {
+            L"8 bit",                           // ansi             
+            L"UTF8 with BOM",                   // utf8_with_bom    
+            L"UTF16 BE with BOM",               // utf16_be_with_bom
+            L"UTF16 LE with BOM",               // utf16_le_with_bom
+            L"UTF-8",                           // utf8             
+            L"7 bit encoding",                  // ascii            
+            L"UTF16 BE",                        // utf16_be         
+            L"UTF6LE"                           // utf16_le         
+        };
+
+        return (0?0
+            : e < 0?                                L"unknown"
+            : e >= npp::File_encoding::n_values()?  L"unnamed"
+            : /* default */                         names[e]
+            );
+    }
 
     struct View_id
     {

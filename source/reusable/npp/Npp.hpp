@@ -1,4 +1,6 @@
 #pragma once
+#include <cppx/stdlib-wrappers/Map_.hpp>                // cppx::Map_
+
 #include <npp/scintilla.hpp>
 
 #include <stdlib/extension/hopefully_and_fail.hpp>      // stdlib::(fail, hopefully)
@@ -9,11 +11,12 @@
 #include <wrapped-notepad++/window-messages.hpp>
 #include <wrapped-notepad++/basic-types.hpp>
 
-#include <stdlib/c/stddef.hpp>      // size_t
+#include <stdlib/c/assert.hpp>      // assert#include <stdlib/c/stddef.hpp>      // size_t
 #include <stdlib/string.hpp>        // std::wstring
 #include <stdlib/vector.hpp>        // std::vector
 
 namespace npp_impl {
+    using cppx::Map_;
     using std::size;
     using std::vector;
     using std::wstring;
@@ -154,6 +157,24 @@ namespace npp_impl {
             ::SendMessage( handle(), NPPM_GETFULLPATHFROMBUFFERID, WPARAM( id ), path_address );
             result.resize( n_chars );
             return result;
+        }
+
+        void convert_to( const File_encoding::Enum encoding )
+        {
+            static const cppx::Map_<File_encoding::Enum, LPARAM> lparam =
+            {
+                { File_encoding::ansi,              IDM_FORMAT_CONV2_ANSI },
+                { File_encoding::ascii,             IDM_FORMAT_CONV2_ANSI },        // Best we can do.
+                { File_encoding::utf8_with_bom,     IDM_FORMAT_CONV2_AS_UTF_8 },
+                { File_encoding::utf8,              IDM_FORMAT_CONV2_UTF_8 },
+                { File_encoding::utf16_be_with_bom, IDM_FORMAT_CONV2_UCS_2BE },
+                { File_encoding::utf16_be,          IDM_FORMAT_CONV2_UCS_2BE },     // Best we can do.
+                { File_encoding::utf16_le_with_bom, IDM_FORMAT_CONV2_UCS_2LE },
+                { File_encoding::utf16_le,          IDM_FORMAT_CONV2_UCS_2LE },     // Best we can do.
+            };
+
+            assert( lparam.size() == File_encoding::n_values() );
+            ::SendMessage( handle(), NPPM_MENUCOMMAND, 0, lparam.at( encoding ) );
         }
 
         void convert_to_utf8()

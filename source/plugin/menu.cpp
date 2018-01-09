@@ -4,7 +4,7 @@
 #include <stdlib/extension/Size.hpp>            // array_size
 
 using namespace stdlib::ext::type_builders;     // raw_array_
-using stdlib::ext::array_size;
+using stdlib::ext::array_size_;
 
 namespace {
     raw_array_<menu::Item> menu_items =
@@ -21,14 +21,6 @@ namespace {
     };
 }  // namespace <anon>
 
-namespace impl {
-
-    template< class Result, class Type >
-    constexpr inline auto array_size_( Type const& a )
-        -> Result
-    { return static_cast<Result>( array_size( a ) ); }
-}
-
 auto menu::items()
     -> menu::Items
-{ return {menu_items, impl::array_size_<int>( menu_items )}; }
+{ return {menu_items, array_size_<int>( menu_items )}; }

@@ -6,7 +6,7 @@
 #include <stdlib/extension/hopefully_and_fail.hpp>
 #include <stdlib/filesystem.hpp>                // std::filesystem::*
 #include <stdlib/memory.hpp>                    // std::unique_ptr
-#include <stdlib/string.hpp>                    // std::(stoi, string)
+#include <stdlib/string.hpp>                    // std::string
 #include <wrapped-tinyxml2/all.hpp>             // tinyxml2::*
 
 namespace npp {
@@ -21,7 +21,6 @@ namespace npp {
     using cppx::Constness;
     using cppx::No_copy;
     using cppx::with_constness_;
-    using std::stoi;
     using std::string;
     using std::unique_ptr;
     using stdlib::ext::char_path_or_x;

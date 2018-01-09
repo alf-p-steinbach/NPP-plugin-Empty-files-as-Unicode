@@ -9,6 +9,7 @@
 #include <cppx/stdlib-wrappers/Map_.hpp>        // cppx::Map_
 #include <cppx/text/stdstring_util.hpp>         // cppx::wide_from_ascii
 
+#include <npp/Config.hpp>
 #include <npp/Npp.hpp>
 
 #include <stdlib/extension/hopefully_and_fail.hpp>
@@ -45,19 +46,25 @@ namespace plugin{ namespace impl {
     using std::wstring;
 
     auto const about_text =
-//L"Let 𝘜 be the encoding last saved as default, or, if that encoding isn’t Unicode,\
-// let 𝘜 be UTF-8 with BOM.\n\ 
-L"Let 𝘜 be UTF-8 with BOM.\n\
+//L"Let 𝘜 be UTF-8 with BOM.\n
+L"The current default Unicode encoding 𝘜 is ¤.\n\
+\n\
+Generally 𝘜 is the encoding last saved as default in the general Notepad++\
+ options, or, if that encoding isn’t Unicode, then 𝘜 is UTF-8 with BOM.\
+ Note: Notepad++ only saves the options when you exit the program. Thus, to\
+ see any changed default as 𝘜 you’ll have to relaunch the program.\n\
 \n\
 When a buffer is activated and has not already been checked:\n\
 \n\
-      if the document is empty and its encoding isn’t Unicode, then\n\
+      if the document is empty and\n\
+      its encoding isn’t Unicode, then\n\
+\n\
       its encoding is set to 𝘜.\n\
 \n\
 Ideally the “when a buffer…” should have been “when file a is opened or\
  a new document is created”, but\
  apparently Notepad++ does not inform a plugin of its creation of new\
- documents. Also, ideally the forced encoding should have been the one\
+ documents. Also, ideally the forced encoding 𝘜 should have been the one\
  currently selected as default in Notepad++, but apparently Notepad++ does not\
  make the dynamic configuration info available to a plugin.\n\
 \n\
@@ -71,32 +78,11 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
 
         using Buffer_codepage_map = Map_<Buffer_id::Enum, Codepage_id::Enum>;
 
-        Npp                     npp_;
-        bool                    npp_startup_completed_  = false;
-        bool                    is_disabled_            = false;
-        Buffer_codepage_map     checked_buffers_        = {};
-
-        static auto name_of( const npp::File_encoding::Enum e )
-            -> ptr_<const wchar_t>
-        {
-            static const raw_array_<ptr_<const wchar_t>> names =
-            {
-                L"8 bit (0)",                       // uni_8bit      
-                L"UTF8 with BOM (1)",               // uni_UTF8      
-                L"UTF16 BE with BOM (2)",           // uni_16BE      
-                L"UTF16 LE with BOM (3)",           // uni_16LE      
-                L"cookie (4)",                      // uni_cookie    
-                L"7 bit (5)",                       // uni_7Bit      
-                L"UTF16 BE (6)",                    // uni_16BE_noBOM
-                L"UTF6LE (7)"                       // uni_16LE_noBOM
-            };
-
-            return (0?0
-                : e < 0?                                L"unknown"
-                : e >= npp::File_encoding::n_values?    L"unnamed"
-                : /* default */                         names[e]
-                );
-        }
+        Npp                         npp_;
+        bool                        npp_startup_completed_  = false;
+        bool                        is_disabled_            = false;
+        Buffer_codepage_map         checked_buffers_        = {};
+        npp::File_encoding::Enum    default_encoding_       = npp::File_encoding::utf8_with_bom;
 
         void best_effort_check( const Buffer_id::Enum buffer_id )
         {
@@ -133,7 +119,8 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 if( npp_.scintilla_length() == 0 )
                 {
                     CPPX_DBGINFO( filepath + L"\nCONVERTING to Unicode" );
-                    npp_.convert_to_utf8_with_bom();
+                    //npp_.convert_to_utf8_with_bom();
+                    npp_.convert_to( default_encoding_ );
                 }
             }
 
@@ -164,15 +151,27 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
     public:
         static constexpr auto name = plugin::name;
 
+        void infobox( ref_<const wstring> text, ref_<const wstring> title = name )
+        {
+            npp_.infobox( text, title );
+        }
+
         void cmd_about()
         {
             const auto title = wstring() + L"About the “" + name + L"” plugin";
-            npp_.infobox( about_text, title );
-        }
-
-        void infobox( ref_<const wstring> text )
-        {
-            npp_.infobox( text, plugin::name );
+            const ptr_<const wchar_t> p_insert = wcschr( about_text, L'¤' );
+            wstring text;
+            if( p_insert == nullptr )
+            {
+                text = about_text;
+            }
+            else
+            {
+                text = wstring{ about_text, p_insert };
+                text += name_of( default_encoding_ );
+                text += p_insert + 1;
+            }
+            infobox( text, title );
         }
 
         void cmd_show_doc_info()
@@ -276,6 +275,17 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
             : npp_{ npp_handles } 
         {
             debug::init_console();
+
+            try
+            {
+                const auto encoding_info = npp::Config{}.default_encoding();
+                if( encoding_info.is_unicode() )
+                {
+                    default_encoding_ = encoding_info.main_encoding();
+                }
+            }
+            catch( ... )
+            {}
         }
     };
 
