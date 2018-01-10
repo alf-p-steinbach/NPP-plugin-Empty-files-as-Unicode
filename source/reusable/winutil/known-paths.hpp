@@ -65,7 +65,7 @@ namespace winutil {
     {
         wstring result( MAX_PATH, L'\0' );
         ::SetLastError( 0 );
-        int n_nonnull_chars = ::GetModuleFileName( 0, &result[0], result.size() );
+        int n_nonnull_chars = ::GetModuleFileName( 0, &result[0], static_cast<DWORD>( result.size() ) );
         hopefully( ::GetLastError() == 0 )
             or fail( "winutil::path_of_executable - GetModuleFileName failed" );
         result.resize( n_nonnull_chars );

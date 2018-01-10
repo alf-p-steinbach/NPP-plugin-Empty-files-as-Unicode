@@ -77,16 +77,16 @@ namespace stdlib{ namespace ext{
 
             string result( item_len, '\0' );
             w::Bool used_substitution = false;
-            int const n_bytes = w::WideCharToMultiByte(
-                w::cp_acp,                  // CodePage
-                w::wc_no_best_fit_chars,    // dwFlags
-                item,                         // lpWideCharStr
-                item_len,                     // cchWideChar,
-                &result[0],                 // lpMultiByteStr
-                result.size(),              // cbMultiByte
-                &ascii::bad_char,           // lpDefaultChar
-                &used_substitution          // lpUsedDefaultChar
-                );
+            Size const n_bytes = static_cast<Size>( w::WideCharToMultiByte(
+                w::cp_acp,                          // CodePage
+                w::wc_no_best_fit_chars,            // dwFlags
+                item,                               // lpWideCharStr
+                static_cast<int>( item_len ),       // cchWideChar,
+                &result[0],                         // lpMultiByteStr
+                static_cast<int>( result.size() ),  // cbMultiByte
+                &ascii::bad_char,                   // lpDefaultChar
+                &used_substitution                  // lpUsedDefaultChar
+                ) );
 
             if( n_bytes == 0 or used_substitution and not substitution_allowed )
             {
