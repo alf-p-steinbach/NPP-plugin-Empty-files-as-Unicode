@@ -35,12 +35,10 @@ For 32-bit Notepad++ choose the 32-bit DLL **empty-files-as-unicode.32-bit.dll**
 
 Copy the DLL to the **plugins** folder in the Notepad++ installation folder.
 
-E.g. on my machine the Notepad++ installation folder is
+E.g. on my machine, with a 32-bit Notepad++, the installation folder is
 
 > c:\program files (x86)\notepad++
 
-… where the placement in “C:\Program Files (x86)” means that it’s a 32-bit Notepad++. If it had been placed in “C:\Program Files” it would have been 64-bit.
-
 ## Contact info.
 
-Author’s mail address: <a href="mailto:alf.p.steinbach+npp@gmail.com?subject=Regarding the “Empty files as Unicode” plugin">alf.p.steinbach+npp@gmail.com</href>.
+Author’s mail address: <a href="mailto:alf.p.steinbach+npp@gmail.com">alf.p.steinbach+npp@gmail.com</href>.
