@@ -6,7 +6,7 @@
 #include <cppx/class-kind/No_copy_or_move.hpp>
 #include <cppx/debug/console-output.hpp>        // cppx::debug::*
 #include <cppx/debug/CPPX_DBGINFO.hpp>
-#include <cppx/stdlib-wrappers/Map_.hpp>        // cppx::Map_
+#include <cppx/stdlib-wrappers/Set_.hpp>        // cppx::Set_
 #include <cppx/text/stdstring_util.hpp>         // cppx::wide_from_ascii
 
 #include <npp/Config.hpp>
@@ -18,14 +18,14 @@
 
 #include <stdlib/bitset.hpp>
 #include <stdlib/functional.hpp>                // std::invoke
-#include <iostream>                             // std::wclog
+#include <iostream>                             // std::wclog       // TODO: non-fixing stdlib
 #include <stdlib/memory.hpp>                    // std::(make_unique, unique_ptr)
 #include <stdlib/string.hpp>                    // std::wstring
 
 #include <wrapped-notepad++/plugin-dll-interface.hpp>   // Func_item etc.
 
 namespace plugin{ namespace impl {
-    using cppx::Map_;
+    using cppx::Set_;
     using cppx::No_copy_or_move;
     using cppx::wide_from_ascii;
     namespace debug = cppx::debug;
@@ -72,12 +72,10 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
         using Buffer_id = npp::Buffer_id;
         struct Codepage_id{ enum Enum: int {}; };
 
-        using Buffer_codepage_map = Map_<Buffer_id::Enum, Codepage_id::Enum>;
-
         Npp                         npp_;
         bool                        npp_startup_completed_  = false;
         bool                        is_disabled_            = false;
-        Buffer_codepage_map         checked_buffers_        = {};
+        Set_<Buffer_id::Enum>       checked_buffers_        = {};
         npp::File_encoding::Enum    default_encoding_       = npp::File_encoding::utf8_with_bom;
 
         void best_effort_check( const Buffer_id::Enum buffer_id )
@@ -120,7 +118,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 }
             }
 
-            checked_buffers_.emplace( buffer_id, Codepage_id::Enum{} ); // TODO:
+            checked_buffers_.insert( buffer_id );
         }
 
         void update_menus()

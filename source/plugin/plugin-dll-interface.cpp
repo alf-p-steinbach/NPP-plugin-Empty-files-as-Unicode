@@ -7,8 +7,8 @@
 #include <stdlib/extension/type_builders.hpp>
 using namespace stdlib::ext::type_builders;
 
-#include <assert.h>
-#include <memory>
+#include <stdlib/c/assert.hpp>      // assert
+#include <stdlib/memory.hpp>        // std::unique_ptr
 using std::unique_ptr;
 
 void dbginfo( ref_<const std::wstring> s )
