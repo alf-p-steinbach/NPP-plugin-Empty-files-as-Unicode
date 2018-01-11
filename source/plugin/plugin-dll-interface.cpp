@@ -11,10 +11,12 @@ using namespace stdlib::ext::type_builders;
 #include <stdlib/memory.hpp>        // std::unique_ptr
 using std::unique_ptr;
 
-void dbginfo( ref_<const std::wstring> s )
-{
-    MessageBox( 0, s.c_str(), L"DbgInfo:", MB_ICONINFORMATION | MB_SETFOREGROUND );
-}
+namespace {
+    void dbginfo( ref_<const std::wstring> s )
+    {
+        MessageBox( 0, s.c_str(), L"DbgInfo:", MB_ICONINFORMATION | MB_SETFOREGROUND );
+    }
+}  // namespace <anon>
 
 namespace npp {
     using Handles       = ::NppData;
