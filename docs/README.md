@@ -1,6 +1,6 @@
 ﻿# A Notepad++ plugin: “Empty files as Unicode”
 
-Automatically changes the encoding of empty documents to Unicode.
+Automatically changes the encoding of opened empty documents to Unicode.
 
 Without this plugin Notepad++ will assume that any existing empty file is encoded as Windows ANSI. With this plugin a Unicode encoding 𝘜 is assumed, and is used when you add and save some text.
 
