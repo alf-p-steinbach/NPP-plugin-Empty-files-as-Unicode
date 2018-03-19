@@ -35,16 +35,18 @@ namespace stdlib{ namespace ext{ namespace process{
 
     protected:
         vector<string>      items_;
+        string              empty_item_;
 
     public:
+        auto size() const -> Size { return items_.size(); }
         auto begin() const  { return items_.begin(); }
         auto end() const    { return items_.end(); }
 
-        auto size() const -> Size { return items_.size(); }
+        auto count() const -> Size { return size() - 1; }       // Args after verb.
 
         auto operator[]( Index const i ) const
             -> ref_<const string>
-        { return items_.at( i ); }
+        { return (0 <= i and i < size()? items_[i] : empty_item_); }
 
         static auto from_os_or_else_from(
             const int               argc,       // Pass 1st argument of `main` here.

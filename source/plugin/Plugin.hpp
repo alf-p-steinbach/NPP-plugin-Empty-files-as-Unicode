@@ -59,9 +59,7 @@ Technically, here’s how it works. 𝘜 is the encoding last saved as default i
 \n\
 When a buffer is activated and has not already been checked:\n\
 \n\
-      if the document is empty and\n\
-      its encoding isn’t Unicode, then\n\
-\n\
+      if the document is empty, then\n\
       its encoding is set to 𝘜.\n\
 \n\
 Author’s mail address: alf.p.steinbach+npp@gmail.com";
@@ -73,10 +71,10 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
         struct Codepage_id{ enum Enum: int {}; };
 
         Npp                         npp_;
-        bool                        npp_startup_completed_  = false;
-        bool                        is_disabled_            = false;
-        Set_<Buffer_id::Enum>       checked_buffers_        = {};
-        npp::File_encoding::Enum    default_encoding_       = npp::File_encoding::utf8_with_bom;
+        bool                        npp_startup_completed_      = false;
+        bool                        is_disabled_                = false;
+        Set_<Buffer_id::Enum>       checked_buffers_            = {};
+        npp::File_encoding::Enum    default_unicode_encoding_;
 
         void best_effort_check( const Buffer_id::Enum buffer_id )
         {
@@ -102,7 +100,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
             } );
 
             //CPPX_DBGINFO( wstring() + L"is_unicode = " + (is_unicode? L"T" : L"F") );
-            if( not is_unicode )
+            if( npp_.scintilla_length() == 0 and npp_file_encoding != default_unicode_encoding_ )
             {
                 if( buffer_id != npp_.current_buffer_id() )
                 {
@@ -110,12 +108,8 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                     fail( "Plugin::check - not current, can't change encoding" );
                 }
 
-                if( npp_.scintilla_length() == 0 )
-                {
-                    CPPX_DBGINFO( filepath + L"\nCONVERTING to Unicode" );
-                    //npp_.convert_to_utf8_with_bom();
-                    npp_.convert_to( default_encoding_ );
-                }
+                CPPX_DBGINFO( filepath + L"\nConverting to the default Unicode encoding" );
+                npp_.convert_to( default_unicode_encoding_ );
             }
 
             checked_buffers_.insert( buffer_id );
@@ -162,7 +156,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
             else
             {
                 text = wstring{ about_text, p_insert };
-                text += name_of( default_encoding_ );
+                text += name_of( default_unicode_encoding_ );
                 text += p_insert + 1;
             }
             infobox( text, title );
@@ -267,6 +261,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
 
         Plugin( ref_<const NppData> npp_handles )
             : npp_{ npp_handles } 
+            , default_unicode_encoding_{ npp::File_encoding::utf8_with_bom }
         {
             debug::init_console();
 
@@ -275,7 +270,7 @@ Author’s mail address: alf.p.steinbach+npp@gmail.com";
                 const auto encoding_info = npp::Config{}.default_encoding();
                 if( encoding_info.is_unicode() )
                 {
-                    default_encoding_ = encoding_info.main_encoding();
+                    default_unicode_encoding_ = encoding_info.main_encoding();
                 }
             }
             catch( ... )

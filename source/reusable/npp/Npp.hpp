@@ -165,15 +165,15 @@ namespace npp_impl {
             {
                 { File_encoding::ansi,              IDM_FORMAT_CONV2_ANSI },
                 { File_encoding::ascii,             IDM_FORMAT_CONV2_ANSI },        // Best we can do.
-                { File_encoding::utf8_with_bom,     IDM_FORMAT_CONV2_AS_UTF_8 },
-                { File_encoding::utf8,              IDM_FORMAT_CONV2_UTF_8 },
+                { File_encoding::utf8_with_bom,     IDM_FORMAT_CONV2_UTF_8 },
+                { File_encoding::utf8,              IDM_FORMAT_CONV2_AS_UTF_8 },
                 { File_encoding::utf16_be_with_bom, IDM_FORMAT_CONV2_UCS_2BE },
                 { File_encoding::utf16_be,          IDM_FORMAT_CONV2_UCS_2BE },     // Best we can do.
                 { File_encoding::utf16_le_with_bom, IDM_FORMAT_CONV2_UCS_2LE },
                 { File_encoding::utf16_le,          IDM_FORMAT_CONV2_UCS_2LE },     // Best we can do.
             };
 
-            assert( lparam.size() == File_encoding::n_values() );
+            assert( lparam.size() == size_t( File_encoding::n_values() ) );
             ::SendMessage( handle(), NPPM_MENUCOMMAND, 0, lparam.at( encoding ) );
         }
 

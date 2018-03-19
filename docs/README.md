@@ -2,7 +2,7 @@
 
 Automatically changes the encoding of opened empty documents to Unicode.
 
-Without this plugin Notepad++ will assume that any existing empty file is encoded as Windows ANSI. With this plugin a Unicode encoding 𝘜 is assumed, and is used when you add and save some text.
+Without this plugin Notepad++ will assume that any existing empty file is encoded as Windows ANSI. In particular that applies for a file specified as command line argument to let Notepad++ create it. With this plugin a Unicode encoding 𝘜 is assumed, and is used when you add and save some text.
 
 ## The plugin’s default encoding 𝘜.
 
@@ -20,9 +20,7 @@ general Notepad++  options, if that encoding is Unicode. But if that encoding is
  When a buffer is activated (e.g. you click on a tab) and has not already been checked:
 
 <ul>
-  <li style="list-style-type: none;">if that document is empty and<br>
-  its encoding isn’t already Unicode, then<br/>
-  &nbsp;<br>
+  <li style="list-style-type: none;">if that document is empty then<br>
   its encoding is set to 𝘜.</li></ul>
 
 ## Installation.
