@@ -6,7 +6,7 @@ Without this plugin Notepad++ will assume that any existing empty file is encode
 
 ## The plugin’s default encoding 𝘜.
 
-Which Unicode encoding 𝘜 currently is, is listed in the plugin’s fabolous “About…”-box.
+Which Unicode encoding 𝘜 currently is, is listed in the plugin’s fabulous “About…”-box.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![The plugin's “About”-box](images/plugin-about-box.cropped.annotated.png)
 
